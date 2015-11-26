@@ -48,6 +48,16 @@
   // Note: _.each does not have a return value, but rather simply runs the
   // iterator function over each item in the input collection.
   _.each = function(collection, iterator) {
+    if(Array.isArray(collection)){
+      for(var i = 0; i < collection.length; i++){
+        iterator(collection[i], i, collection);
+      }
+    } else {
+      for(var value in collection){
+        iterator(collection[value], value, collection);
+      }
+    }
+    return collection;
   };
 
   // Returns the index at which value can be found in the array, or -1 if value
@@ -69,24 +79,66 @@
 
   // Return all elements of an array that pass a truth test.
   _.filter = function(collection, test) {
+    var filtered = [];
+    _.each(collection, function(item){
+      if(test(item)){
+        filtered.push(item);
+      }
+    });
+    return filtered;
   };
 
   // Return all elements of an array that don't pass a truth test.
   _.reject = function(collection, test) {
-    // TIP: see if you can re-use _.filter() here, without simply
-    // copying code in and modifying it
+    var accepted = _.filter(collection, test);
+    return _.filter(collection, function(item){
+      for(var i = 0; i < accepted.length; i++){
+        if(accepted[i] === item){
+          return false;
+        }
+      }
+      return true;
+    });
   };
 
   // Produce a duplicate-free version of the array.
   _.uniq = function(array) {
+    var uniqueValues = [];
+    var unique;
+    for(var i = 0; i < array.length; i++){
+      unique = true;
+      for(var j = 0; j < uniqueValues.length; j++){
+        if(uniqueValues[j] === array[i]){
+          unique = false;
+          break;
+        }
+      }
+      if(unique){
+        uniqueValues.push(array[i]);
+      }
+    }
+    return uniqueValues;
   };
 
 
   // Return the results of applying an iterator to each element.
   _.map = function(collection, iterator) {
-    // map() is a useful primitive iteration function that works a lot
-    // like each(), but in addition to running the operation on all
-    // the members, it also maintains an array of results.
+    if(Array.isArray(collection)){
+      var mappedArray = [];
+      _.each(collection, function(value){
+        mappedArray.push(iterator(value));
+      });
+      return mappedArray;
+    } else {
+      var mappedObject = {};
+      for(var value in collection){
+        mappedObject[value] = iterator(collection[value]);
+      }
+      _.each(collection, function(value, key){
+        mappedObject[key] = (iterator(value));
+      });
+      return mappedObject;
+    }
   };
 
   /*
