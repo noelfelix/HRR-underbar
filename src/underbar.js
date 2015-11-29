@@ -247,11 +247,25 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    for(var i = 0; i < arguments.length; i++){
+      _.each(arguments[i], function(value, key){
+        obj[key] = value;
+      });
+    }
+    return obj;
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    for(var i = 0; i < arguments.length; i++){
+      _.each(arguments[i], function(value, key){
+        if(obj[key] === undefined){
+          obj[key] = value;
+        }
+      });
+    }
+    return obj;
   };
 
 
@@ -318,6 +332,25 @@
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
+    var isShuffled = false;
+
+    while(true){
+      var copy = array.slice();
+      var shuffled = [];
+      for(var i = 0; i < array.length; i++){
+        shuffled.push(copy.splice(Math.floor(Math.random() * copy.length), 1)[0]);
+      }
+
+      var sameCount = 0;
+      for(var i = 0; i < array.length; i++){
+        if(shuffled[i] === array[i]){
+          sameCount++;
+        }
+      }
+      if(sameCount != array.length || array.length === 0){
+        return shuffled;
+      }
+    }
   };
 
 
