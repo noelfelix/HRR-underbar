@@ -320,23 +320,10 @@
   // instead if possible.
   _.memoize = function(func) {
     var memo = {};
-    var runCount = 1;
     return function(){
-      for(var instance in memo){
-        var matchCount = 0;
-        for(var i = 0; i < arguments.length && arguments.length === memo[instance].args.length; i++){
-          if(arguments[i] === memo[instance].args[i]){
-            matchCount++;
-          }
-          if(matchCount === arguments.length){
-            return memo[instance].args.returnValue;
-          }
-        }
-      }
-      var returnValue = func.apply(this, arguments);
-      memo["instance" + runCount] = {args: arguments, returnValue: returnValue};
-      runCount++;
-      return returnValue;
+      var args = _.argArray(arguments);
+      memo[args] = memo[args] || func.apply(this,args);
+      return memo[args];
     }
   };
 
